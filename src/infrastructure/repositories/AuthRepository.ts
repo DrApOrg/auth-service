@@ -10,14 +10,14 @@ export class AuthRepository implements IAuthRepository {
         this.SqlAdapter = db
     }
 
-    findById = async (params: Pick<AuthUser, "id">): Promise<AuthUser>  => {
+    findById = async (params: Pick<AuthUser, "customer_id">): Promise<AuthUser>  => {
         return new Promise((resolve, reject) => { 
-            this.SqlAdapter.db.query("SELECT * FROM customers WHERE id_customer = ?", [params.id],
+            this.SqlAdapter.db.query("SELECT * FROM customers WHERE id_customer = ?", [params.customer_id],
                 (err, result) => {
                     if(err) {
                     return reject(err)
                     }
-                    resolve(result)
+                    resolve(result[0])
                 }
             )
         })
@@ -31,16 +31,17 @@ export class AuthRepository implements IAuthRepository {
                     if(err) {
                     return reject(err)
                     }
-                    resolve(result)
+                    resolve(result[0])
                 }
             )
         })
     }
 
-    save = async(params: AuthUser): Promise<Pick<AuthUser, "id">>  => {
+    save = async(params: AuthUser): Promise<Pick<AuthUser, "customer_id">>  => {
         return new Promise((resolve, reject) => {
             this.SqlAdapter.db.query(
-                'INSERT INTO customers (uuid, name, email, addres, payment_method) VALUES (?,?,?,?)', [],
+                'INSERT INTO customers (customer_id, first_name, last_name, email, dni, password, created_at, updated_at) VALUES (?,?,?,?,?,?, current_timestamp(), current_timestamp())', 
+                [params.customer_id, params.first_name, params.last_name, params.email, params.dni, params.password],
                 (err, res) => {
                     err ? reject(err)
                     : resolve(params)
