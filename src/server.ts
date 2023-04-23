@@ -1,6 +1,7 @@
 import { Application, json, urlencoded } from "express";
 import { Router } from "./infrastructure/routes/Router";
 import cors from 'cors'
+import { ErrorHandler } from "./application/middlewares/ErrorHandler";
 
 // Server class
 export default class Server {
@@ -20,8 +21,6 @@ export default class Server {
         // json middleware
         this.app.use(json())
 
-        // error handler middleware
-        // this.app.use(errorHandler)
     } 
 
 
@@ -31,6 +30,9 @@ export default class Server {
         // set routes
         const router = new Router(this.app)
         router.init()
+
+        // error handler middleware
+        this.app.use(ErrorHandler)
 
         this.app.listen(process.env.PORT || 4504, () => {
             console.log(`Server is running ${process.env.PORT}`)

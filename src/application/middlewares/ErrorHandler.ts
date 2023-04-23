@@ -1,23 +1,37 @@
 import httpStatusCodes from "http-status-codes";
 import { HttpErroRequest } from "../../utils/error";
-import {
+import type {
+  ErrorRequestHandler,
   Request,
-  Response,
+  Response
 } from 'express';
+import { BaseError, EmailRegistrationError } from "../../domain/Exceptions";
+import { ErrorPayload } from "../../domain/Payload/Error";
 
-export const ErrorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
+export const ErrorHandler: ErrorRequestHandler = (
+  err,
+  req,
+  res,
+  next,
 ) => {
-  let status = httpStatusCodes.INTERNAL_SERVER_ERROR;
 
-  if (err instanceof HttpErroRequest) {
-    status = httpStatusCodes.BAD_REQUEST;
+  console.log("entor")
+  let ErrorPayload: ErrorPayload  = {
+    message: 'error',
+    statuscode: 500
   }
 
-  return res.status(status).send({
-      name: err.name,
-      message: err.message,
-    });
+  switch(err) {
+    case new EmailRegistrationError:
+      ErrorPayload.message = err.message
+      ErrorPayload.statuscode = 409
+      break
+    default:
+      console.log('default')
+      break
+  }
+
+  res
+    .status(ErrorPayload.statuscode)
+    .send(ErrorPayload)
 };
