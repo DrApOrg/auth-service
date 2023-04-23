@@ -8,13 +8,26 @@ export class AuthController {
         this.service = service
     }
 
-     login = async (req: Request, res: Response, next: NextFunction) => {
+    login = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const authuser = req.body
-            const result = await this.service.loginUser(authuser)
-            res.status(201).send(result);
+            const authUser = req.body
+            const result = await this.service.loginUser(authUser)
+            res.status(200).send(result);
         } catch (error) {
             next(error)
         }
     }
+
+    register = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const authUser = req.body
+            const result = await this.service.registerUser(authUser)
+            res.status(201).send({
+                customer_id: result.customer_id
+            });
+        } catch (error) {
+            next(error)
+        } 
+    } 
+
 }  

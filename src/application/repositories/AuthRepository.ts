@@ -1,7 +1,7 @@
 import { Pool } from "mysql";
 import { AuthUser } from "../../domain/models/User";
 import { IAuthRepository } from "../../domain/repositories/IAuthRepository";
-import { SqlAdapter } from "../database/mysql";
+import { SqlAdapter } from "../../infrastructure/database/mysql";
 
 export class AuthRepository implements IAuthRepository {
     private SqlAdapter: SqlAdapter
