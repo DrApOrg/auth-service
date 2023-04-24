@@ -1,6 +1,5 @@
 import {createPool, Pool} from 'mysql'
-
-const DATABASE_URL_TEST ='mysql://root:password@localhost:3307/draporg'
+import config from '../config/config'; 
 
 export interface SqlAdapter {
   db: Pool;
@@ -10,7 +9,13 @@ export class MySqlAdapter implements SqlAdapter {
     private database: Pool;
 
     constructor (){
-        this.database = createPool(DATABASE_URL_TEST);
+        this.database = createPool({
+            host: config.DATABASE_HOST,
+            user: config.DATABASE_USERNAME,
+            password: config.DATABASE_PASSWORD,
+            database: config.DATABASE_NAME,
+            port: 3307
+        });
     }
 
     get db() {
