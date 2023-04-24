@@ -1,2 +1,3 @@
-export {EmailRegistrationError} from './EmailRegistrationError'
-export {BaseError} from './BaseError'
+export { BaseError } from './BaseError'
+export { EmailRegistrationError } from './EmailRegistrationError'
+export { AuthenticationError } from './AuthenticationError'

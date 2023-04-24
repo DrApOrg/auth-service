@@ -4,7 +4,7 @@ import type {
   Request,
   Response
 } from 'express';
-import { BaseError, EmailRegistrationError } from "../../domain/Exceptions";
+import { AuthenticationError, BaseError, EmailRegistrationError } from "../../domain/Exceptions";
 import { ErrorPayload } from "../../domain/Payload/Error";
 
 export const ErrorHandler: ErrorRequestHandler = (
@@ -20,6 +20,10 @@ export const ErrorHandler: ErrorRequestHandler = (
   }
 
   switch(err) {
+    case new AuthenticationError:
+      ErrorPayload.message = err.message
+      ErrorPayload.statuscode = 401
+      break
     case new EmailRegistrationError:
       ErrorPayload.message = err.message
       ErrorPayload.statuscode = 409
