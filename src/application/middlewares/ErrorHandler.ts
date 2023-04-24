@@ -1,5 +1,4 @@
 import httpStatusCodes from "http-status-codes";
-import { HttpErroRequest } from "../../utils/error";
 import type {
   ErrorRequestHandler,
   Request,
