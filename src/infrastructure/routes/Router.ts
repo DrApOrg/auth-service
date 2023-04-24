@@ -17,9 +17,9 @@ export class Router {
         const authService = new AuthService(authRepo)
         const authController = new AuthController(authService)
 
-        this.app.post('/login', authController.login)
-        this.app.post('/register', authController.register)
-        this.app.get('/test', (req: Request, res: Response) => {
+        this.app.post('/api/v1/login', authController.login)
+        this.app.post('/api/v1/register', authController.register)
+        this.app.get('/api/v1/test', (req: Request, res: Response) => {
             res.send('hola mundo')
         })
     }
