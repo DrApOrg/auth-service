@@ -15,9 +15,8 @@ export const ErrorHandler: ErrorRequestHandler = (
   next,
 ) => {
 
-  console.log("entor")
   let ErrorPayload: ErrorPayload  = {
-    message: 'error',
+    message: '',
     statuscode: 500
   }
 
@@ -27,7 +26,8 @@ export const ErrorHandler: ErrorRequestHandler = (
       ErrorPayload.statuscode = 409
       break
     default:
-      console.log('default')
+      ErrorPayload.message = err.message
+      ErrorPayload.statuscode = 500
       break
   }
 
