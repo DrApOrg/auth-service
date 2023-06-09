@@ -1,7 +1,8 @@
 import { Application, json, urlencoded } from "express";
-import { Router } from "./infrastructure/routes/Router";
+import { Router } from "./infrastructure/http/routes/Router";
 import cors from 'cors'
 import { ErrorHandler } from "./application/middlewares/ErrorHandler";
+import config from "./infrastructure/config/config";
 
 // Server class
 export default class Server {
@@ -23,15 +24,12 @@ export default class Server {
 
     } 
 
-
-    public init() {
+    public listen() {
         this.config()
 
         // set routes
         const router = new Router(this.app)
         router.init()
-
-        // error handler middleware
         this.app.use(ErrorHandler)
 
         this.app.listen(process.env.PORT || 4504, () => {

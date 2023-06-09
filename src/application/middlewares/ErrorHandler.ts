@@ -1,10 +1,14 @@
-import httpStatusCodes from "http-status-codes";
 import type {
   ErrorRequestHandler,
   Request,
   Response
 } from 'express';
-import { AuthenticationError, BaseError, EmailRegistrationError } from "../../domain/Exceptions";
+import { 
+  PhoneRegistrationError, 
+  AuthenticationError, 
+  BaseError, 
+  EmailRegistrationError 
+} from "../../domain/Exceptions";
 import { ErrorPayload } from "../../domain/Payload/Error";
 
 export const ErrorHandler: ErrorRequestHandler = (
@@ -19,12 +23,17 @@ export const ErrorHandler: ErrorRequestHandler = (
     statuscode: 500
   }
 
+  // TODO: change Registration Error control
   switch(err) {
-    case new AuthenticationError:
+    case AuthenticationError:
       ErrorPayload.message = err.message
       ErrorPayload.statuscode = 401
       break
-    case new EmailRegistrationError:
+    case EmailRegistrationError:
+      ErrorPayload.message = err.message
+      ErrorPayload.statuscode = 409
+      break
+    case PhoneRegistrationError:
       ErrorPayload.message = err.message
       ErrorPayload.statuscode = 409
       break

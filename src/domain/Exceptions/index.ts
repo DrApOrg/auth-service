@@ -1,3 +1,5 @@
 export { BaseError } from './BaseError'
 export { EmailRegistrationError } from './EmailRegistrationError'
+export { PhoneRegistrationError } from './PhoneRegistrationError'
 export { AuthenticationError } from './AuthenticationError'
+export { InvalidPhone } from './InvalidPhone'
