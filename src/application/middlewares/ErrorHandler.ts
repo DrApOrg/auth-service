@@ -1,15 +1,7 @@
 import type {
   ErrorRequestHandler,
-  Request,
-  Response
 } from 'express';
-import { 
-  PhoneRegistrationError, 
-  AuthenticationError, 
-  BaseError, 
-  EmailRegistrationError 
-} from "../../domain/Exceptions";
-import { ErrorPayload } from "../../domain/Payload/Error";
+import { ResponsePayload } from '@domain/Payload/response.payload';
 
 export const ErrorHandler: ErrorRequestHandler = (
   err,
@@ -18,32 +10,44 @@ export const ErrorHandler: ErrorRequestHandler = (
   next,
 ) => {
 
-  let ErrorPayload: ErrorPayload  = {
+  let ErrorPayload: ResponsePayload<{}>  = {
     message: '',
-    statuscode: 500
+    status: 500,
+    data: {}
   }
 
   // TODO: change Registration Error control
-  switch(err) {
-    case AuthenticationError:
-      ErrorPayload.message = err.message
-      ErrorPayload.statuscode = 401
-      break
-    case EmailRegistrationError:
-      ErrorPayload.message = err.message
-      ErrorPayload.statuscode = 409
-      break
-    case PhoneRegistrationError:
-      ErrorPayload.message = err.message
-      ErrorPayload.statuscode = 409
-      break
-    default:
-      ErrorPayload.message = err.message
-      ErrorPayload.statuscode = 500
-      break
-  }
+  const errorMappings: {
+    [key: string]: {
+      message: (err: Error) => any;
+      status: number;
+    };
+  } = {
+    AuthenticationError: {
+      message: err => err.message,
+      status: 401
+    },
+    EmailRegistrationError: {
+      message: err => err.message,
+      status: 409
+    },
+    PhoneRegistrationError: {
+      message: err => err.message,
+      status: 409
+    },
+    default: {
+      message: err => err.message,
+      status: 500
+    }
+  };
+
+  const errorType = err.constructor.name;
+  const errorMapping = errorMappings[errorType] || errorMappings.default;
+
+  ErrorPayload.message = errorMapping.message(err);
+  ErrorPayload.status = errorMapping.status;
 
   res
-    .status(ErrorPayload.statuscode)
-    .send(ErrorPayload)
+    .status(ErrorPayload.status)
+    .json(ErrorPayload)
 };

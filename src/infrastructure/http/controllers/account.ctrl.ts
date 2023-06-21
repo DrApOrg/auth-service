@@ -11,15 +11,17 @@ export class AccountController{
     ){
     }
 
-    resSendPhoneCode = async (req: Request, res: Response, next: NextFunction) => {
+    reSendPhoneCode = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { phone } = req.body
-            const phoneCode = this.service.sendPhoneCode(phone)
-            const payload: ResponsePayload<{code: string}> = {
+            const phoneCode = await this.service.sendPhoneCode(phone)
+            const account = await this.service.profile(phone)
+            const payload: ResponsePayload<{code: string, user: IAccount}> = {
                 message: "verification phone code",
                 status: 200,
                 data: {
-                    code: phoneCode
+                    code: phoneCode,
+                    user: account
                 }
             }
             return res.json(payload).status(200)
@@ -33,14 +35,12 @@ export class AccountController{
             const { phone } = req.body
 
             const phoneCode = await this.service.sendPhoneCode(phone)
-            const account = await this.service.createAccount(phone)
 
-            const payload: ResponsePayload<{code: string, user: IAccount}> = {
+            const payload: ResponsePayload<{code: string}> = {
                 message: "phone registered successfully",
                 status: 200,
                 data: {
                     code: phoneCode,
-                    user: account
                 }
             }
             return res.json(payload).status(200)
@@ -49,15 +49,31 @@ export class AccountController{
         }
     }
 
-    registerAccount = async (req: Request, res: Response, next: NextFunction) => {
+    preRegisterAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const account = req.body
-            const createdAccount = await this.service.updateAccount(account)
+            const { firstName, lastName, name, phone, birthday, dni, accountType } = req.body
+            const createdAccount = await this.service.createAccount(
+                { firstName , lastName, name, phone, birthday, dni, accountType } as IAccount)
+
             const payload: ResponsePayload<IAccount> = {
                 message: "user registered successfully",
                 status: 200,
                 data: createdAccount
-                
+            }
+            return res.json(payload).status(200)
+        } catch (error) {
+            next(error)
+        }
+    } 
+
+    registerAccount = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {id, email, password} = req.body
+            const createdAccount = await this.service.updateAccount({id, email, password} as IAccount)
+            const payload: ResponsePayload<IAccount> = {
+                message: "user registered successfully",
+                status: 200,
+                data: createdAccount
             }
             return res.json(payload).status(200)
         } catch (error) {

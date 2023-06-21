@@ -11,12 +11,12 @@ import {
 import { AccountRepository } from "../../infrastructure/repositories/account.repo";
 
 export interface IAccountService {
-    sendPhoneCode: (phone: string) => string
+    sendPhoneCode: (phone: string) => Promise<string>
     verifyCodePhone: (code: string) => boolean
     loginAccount: (account: IAccount) => Promise<IAccount>
-    createAccount: (phone: string) => Promise<IAccount>
-    updateAccount: (params: IAccount) => Promise<IAccount>
-    profile: (id: string) => Promise<IAccount>
+    createAccount: (param: IAccount) => Promise<IAccount>
+    updateAccount: (param: IAccount) => Promise<IAccount>
+    profile: (phone: string) => Promise<IAccount>
 }
 
 export class AccountService implements IAccountService {
@@ -39,7 +39,13 @@ export class AccountService implements IAccountService {
         return account
     }
 
-    sendPhoneCode = (phone: string): string=> {
+    sendPhoneCode = async (phone: string): Promise<string> => {
+        if(UseCase.VerifyPhone(phone)) {
+            throw new InvalidPhone
+        }
+        if(await this.accRepo.findByPhone(phone)) {
+            throw new PhoneRegistrationError
+        }
         return UseCase.SendPhoneCode(phone)
     }
 
@@ -48,41 +54,37 @@ export class AccountService implements IAccountService {
         return UseCase.VerifyPhoneCode(code)
     }
 
-    createAccount = async (phone: string): Promise<IAccount> => {
-        if(UseCase.VerifyPhone(phone)) {
-            throw new InvalidPhone
-        }
-
-        if(await this.accRepo.findByPhone(phone)) {
+    createAccount = async (param: IAccount): Promise<IAccount> => {
+        if(await this.accRepo.findByPhone(param.phone as string)) {
             throw new PhoneRegistrationError
         }
 
-        const account: IAccount = {phone: phone} as IAccount
-
-        const createdAccount = await this.accRepo.save(account)
+        const createdAccount = await this.accRepo.save(param)
 
         return createdAccount
     }
 
-    updateAccount = async (params: IAccount): Promise<IAccount> => {
-        if(await this.accRepo.findByEmail(params.email)) {
+    updateAccount = async (param: IAccount): Promise<IAccount> => {
+        if(await this.accRepo.findByEmail(param.email)) {
             throw new EmailRegistrationError
         }
 
+        // hash password
         const salt = await bcrypt.genSalt(10)
-        params.password = await bcrypt.hash(params.password, salt)
+        param.password = await bcrypt.hash(param.password, salt)
 
-        const account = await this.accRepo.update(params.id as string, params)
+        const account = await this.accRepo.update(param.id as string, param)
+
         if(!account) {
-            throw new BaseError("") 
+            throw new BaseError("error updating user") 
         }
         return account
     }
 
-    profile = async  (id: string): Promise<IAccount> => { 
-        const account = await this.accRepo.findById(id)
+    profile = async  (phone: string): Promise<IAccount> => { 
+        const account = await this.accRepo.findByPhone(phone)
         if(!account) {
-            throw new BaseError("")
+            throw new BaseError("error getting user")
         }
         return account
     }

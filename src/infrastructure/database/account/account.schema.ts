@@ -5,12 +5,13 @@ export const accountSchema = new Schema({
     accountType: {
         type: String,
         enum: AccountType,
+        required: true
     },
-    lastName: {type: String},
-    firstName: {type: String},
-    name: {type: String},
-    dni: {type: Number}, 
-    phone: {type: Number, require: true}, 
+    lastName: {type: String, required: true},
+    firstName: {type: String, required: true },
+    name: {type: String, required: true },
+    dni: {type: Number, required: true}, 
+    phone: {type: Number, required: true}, 
     email: {type: String}, 
     password: {type: String}, 
 }, {
