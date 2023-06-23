@@ -84,13 +84,16 @@ export class AccountController{
     loginAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const account = req.body
-            const createdAccount = await this.service.loginAccount(account)
-            const token = JwtService.generateToken(createdAccount)
+            const loginAccoun = await this.service.loginAccount(account)
+            const token = JwtService.generateToken(loginAccoun)
             console.log(token)
-            const payload: ResponsePayload<string> = {
+            const payload: ResponsePayload<{token: string, user: IAccount}> = {
                 message: "successfully",
                 status: 200,
-                data: token
+                data: {
+                    token,
+                    user: loginAccoun
+                }
                 
             }
             return res.json(payload).status(200)
