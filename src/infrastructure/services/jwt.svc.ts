@@ -1,4 +1,4 @@
-import { IAccount } from '@domain/models/account'
+import { IAccount } from '../../domain/models/account'
 import jwt from 'jsonwebtoken'
 
 export class JwtService {

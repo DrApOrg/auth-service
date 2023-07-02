@@ -1,21 +1,38 @@
-import { ResponsePayload } from "@domain/Payload/response.payload"
-import { IAccount } from "@domain/models/account"
-import { IAccountService } from "@domain/services/account.svc"
-import { JwtService } from "../../../domain/services/jwt.svc"
+import { ResponsePayload } from "../../../domain/Payload/response.payload"
+import { IAccount } from "../../../domain/models/account"
+import { IAccountService } from "../../../domain/services/IAccountService"
+import { JwtService } from "../../services/jwt.svc"
 import type { NextFunction, Request, Response } from "express"
+import { IS3Service } from "../../../domain/services/IS3.srv"
 
 export class AccountController{
 
     constructor(
-        private service: IAccountService
+        private accService: IAccountService,
+        private s3Service: IS3Service
     ){
+    }
+
+    uploadImage = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if(!req.files) {
+                throw Error("not found file")
+            }            
+            const imageUrl = await this.s3Service.uploadFile(req.files.file)
+            res.json({
+                imageurl: imageUrl,
+                imagename: imageUrl.split("/").pop()
+            }).status(202)
+        } catch (error) {
+            next(error)
+        }
     }
 
     reSendPhoneCode = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { phone } = req.body
-            const phoneCode = await this.service.sendPhoneCode(phone)
-            const account = await this.service.profile(phone)
+            const phoneCode = await this.accService.sendPhoneCode(phone)
+            const account = await this.accService.profile(phone)
             const payload: ResponsePayload<{code: string, user: IAccount}> = {
                 message: "verification phone code",
                 status: 200,
@@ -34,7 +51,7 @@ export class AccountController{
         try {
             const { phone } = req.body
 
-            const phoneCode = await this.service.sendPhoneCode(phone)
+            const phoneCode = await this.accService.sendPhoneCode(phone)
 
             const payload: ResponsePayload<{code: string}> = {
                 message: "phone registered successfully",
@@ -52,7 +69,7 @@ export class AccountController{
     preRegisterAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { firstName, lastName, name, phone, birthday, dni, accountType } = req.body
-            const createdAccount = await this.service.createAccount(
+            const createdAccount = await this.accService.createAccount(
                 { firstName , lastName, name, phone, birthday, dni, accountType } as IAccount)
 
             const payload: ResponsePayload<IAccount> = {
@@ -69,11 +86,19 @@ export class AccountController{
     registerAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const {id, email, password} = req.body
-            const createdAccount = await this.service.updateAccount({id, email, password} as IAccount)
-            const payload: ResponsePayload<IAccount> = {
+            const createdAccount = await this.accService.updateAccount({id, email, password} as IAccount)
+
+            const token = JwtService.generateToken(createdAccount)
+            const payload: ResponsePayload<{
+                token: string,
+                user: IAccount
+            }> = {
                 message: "user registered successfully",
                 status: 200,
-                data: createdAccount
+                data: {
+                    token,
+                    user: createdAccount
+                }
             }
             return res.json(payload).status(200)
         } catch (error) {
@@ -84,9 +109,9 @@ export class AccountController{
     loginAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const account = req.body
-            const loginAccoun = await this.service.loginAccount(account)
+            const loginAccoun = await this.accService.loginAccount(account)
             const token = JwtService.generateToken(loginAccoun)
-            console.log(token)
+
             const payload: ResponsePayload<{token: string, user: IAccount}> = {
                 message: "successfully",
                 status: 200,
@@ -94,7 +119,6 @@ export class AccountController{
                     token,
                     user: loginAccoun
                 }
-                
             }
             return res.json(payload).status(200)
         } catch (error) {

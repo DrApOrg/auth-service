@@ -2,7 +2,7 @@ import { Application, json, urlencoded } from "express";
 import { Router } from "./infrastructure/http/routes/Router";
 import cors from 'cors'
 import { ErrorHandler } from "./application/middlewares/ErrorHandler";
-import config from "./infrastructure/config/config";
+import fileupload from 'express-fileupload'
 
 // Server class
 export default class Server {
@@ -22,6 +22,11 @@ export default class Server {
         // json middleware
         this.app.use(json())
 
+        // file uploader middleware
+        this.app.use(fileupload({
+            useTempFiles: true,
+            tempFileDir: '/tmp/'
+        }))
     } 
 
     public listen() {
@@ -29,9 +34,11 @@ export default class Server {
 
         // set routes
         const router = new Router(this.app)
+
         router.init()
         this.app.use(ErrorHandler)
 
+        console.log("port", process.env.PORT)
         this.app.listen(process.env.PORT || 4504, () => {
             console.log(`Server is running ${process.env.PORT}`)
         })

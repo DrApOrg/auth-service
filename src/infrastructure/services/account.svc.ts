@@ -1,6 +1,5 @@
-import { IAccount } from "@domain/models/account";
+import { IAccount } from "../../domain/models/account";
 import bcrypt from 'bcrypt'
-import * as UseCase from "../../application/use-cases/SmsUseCase";
 import { 
     BaseError,
     PhoneRegistrationError,
@@ -8,16 +7,8 @@ import {
     InvalidPhone,
     AuthenticationError
 } from "../../domain/Exceptions";
-import { AccountRepository } from "../../infrastructure/repositories/account.repo";
-
-export interface IAccountService {
-    sendPhoneCode: (phone: string) => Promise<string>
-    verifyCodePhone: (code: string) => boolean
-    loginAccount: (account: IAccount) => Promise<IAccount>
-    createAccount: (param: IAccount) => Promise<IAccount>
-    updateAccount: (param: IAccount) => Promise<IAccount>
-    profile: (phone: string) => Promise<IAccount>
-}
+import { AccountRepository } from "../repositories/account.repo";
+import { IAccountService } from "../../domain/services/IAccountService";
 
 export class AccountService implements IAccountService {
     constructor(
@@ -40,18 +31,16 @@ export class AccountService implements IAccountService {
     }
 
     sendPhoneCode = async (phone: string): Promise<string> => {
-        if(UseCase.VerifyPhone(phone)) {
+        if(!(phone.length === 9)) {
             throw new InvalidPhone
         }
+
         if(await this.accRepo.findByPhone(phone)) {
             throw new PhoneRegistrationError
         }
-        return UseCase.SendPhoneCode(phone)
-    }
 
-    // TODO: implement verify code phone
-    verifyCodePhone = (code: string): boolean => {
-        return UseCase.VerifyPhoneCode(code)
+        // send phone code
+        return "12345"
     }
 
     createAccount = async (param: IAccount): Promise<IAccount> => {

@@ -1,5 +1,6 @@
 import { Application, Request, Response } from "express";
 import { AccountRoutes } from "./account.routes";
+
 export class Router {
     private app: Application
 
