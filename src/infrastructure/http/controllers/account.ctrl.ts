@@ -3,13 +3,12 @@ import { IAccount } from "../../../domain/models/account"
 import { IAccountService } from "../../../domain/services/IAccountService"
 import { JwtService } from "../../services/jwt.svc"
 import type { NextFunction, Request, Response } from "express"
-import { IS3Service } from "../../../domain/services/IS3.srv"
+import { IFileRepository } from "../../../domain/repositories/IFile.srv"
 
 export class AccountController{
 
     constructor(
         private accService: IAccountService,
-        private s3Service: IS3Service
     ){
     }
 
@@ -18,7 +17,7 @@ export class AccountController{
             if(!req.files) {
                 throw Error("not found file")
             }            
-            const imageUrl = await this.s3Service.uploadFile(req.files.file)
+            const imageUrl = await this.accService.uploadFile(req.files.file)
             res.json({
                 imageurl: imageUrl,
                 imagename: imageUrl.split("/").pop()
@@ -58,6 +57,7 @@ export class AccountController{
                 status: 200,
                 data: {
                     code: phoneCode,
+
                 }
             }
             return res.json(payload).status(200)
@@ -68,9 +68,9 @@ export class AccountController{
 
     preRegisterAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { firstName, lastName, name, phone, birthday, dni, accountType } = req.body
+            const { firstName, lastName, name, phone, image, birthday, dni, accountType } = req.body
             const createdAccount = await this.accService.createAccount(
-                { firstName , lastName, name, phone, birthday, dni, accountType } as IAccount)
+                { firstName , lastName, name, phone, image, birthday, dni, accountType } as IAccount)
 
             const payload: ResponsePayload<IAccount> = {
                 message: "user registered successfully",

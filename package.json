@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "dev": "NODE_ENV=development nodemon src/app.ts",
+    "prod": "NODE_ENV=production nodemon src/app.ts",
     "build": "tsc -p ."
   },
   "keywords": [],
@@ -23,7 +24,8 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.2",
     "mysql": "^2.18.1",
-    "shortid": "^2.2.16"
+    "shortid": "^2.2.16",
+    "twilio": "^4.13.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

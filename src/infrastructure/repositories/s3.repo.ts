@@ -1,12 +1,16 @@
-import { IS3Service } from "../../domain/services/IS3.srv";
-import { generateUniqueFileName } from "../../infrastructure/aws/s3";
+import { IFileRepository } from "../../domain/repositories/IFile.srv";
+import { generateUniqueFileName } from "../aws/s3";
 import {S3 as s3Client} from 'aws-sdk'
 import fs from 'fs'
 
-export class S3Service implements IS3Service {
+export class S3Repository implements IFileRepository {
     constructor(
         private storageClient: s3Client
     ){
+    }
+
+    deleteFile(file: any): Promise<string> {
+        throw new Error("Method not implemented.");
     }
 
     async uploadFile(file: any): Promise<string> {

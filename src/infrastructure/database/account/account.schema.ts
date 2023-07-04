@@ -7,7 +7,7 @@ export const accountSchema = new Schema({
         enum: AccountType,
         required: true
     },
-    image: {type: String, require: false},
+    image: {type: String, require: true},
     lastName: {type: String, required: true},
     firstName: {type: String, required: true },
     name: {type: String, required: true },

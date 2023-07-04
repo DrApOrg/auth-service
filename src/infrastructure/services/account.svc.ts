@@ -7,14 +7,21 @@ import {
     InvalidPhone,
     AuthenticationError
 } from "../../domain/Exceptions";
-import { AccountRepository } from "../repositories/account.repo";
 import { IAccountService } from "../../domain/services/IAccountService";
+import { IFileRepository } from "../../domain/repositories/IFile.srv";
+import { IAccountRepository } from "../../domain/repositories/account.repo";
+import { clientTwilio, sendCoderTest } from "../../infrastructure/twilio/twilio";
 
 export class AccountService implements IAccountService {
     constructor(
-        private accRepo: AccountRepository
+        private accRepo: IAccountRepository,
+        private s3Repo: IFileRepository,
     ){
     }
+
+    uploadFile = async (param: any): Promise<string> => {
+        return this.s3Repo.uploadFile(param) 
+    };
 
     loginAccount = async (params: IAccount): Promise<IAccount> => {
         const account = await this.accRepo.findByEmail(params.email)
@@ -31,7 +38,7 @@ export class AccountService implements IAccountService {
     }
 
     sendPhoneCode = async (phone: string): Promise<string> => {
-        if(!(phone.length === 9)) {
+        if(!(phone.slice(3).length === 9)) {
             throw new InvalidPhone
         }
 
@@ -39,7 +46,9 @@ export class AccountService implements IAccountService {
             throw new PhoneRegistrationError
         }
 
-        // send phone code
+        // const pin = Math.floor(10000 + Math.random() * 90000).toString()
+        // const data = await sendCoderTest(pin, phone)
+        // console.log({message_void: data})
         return "12345"
     }
 

@@ -2,15 +2,16 @@ import type { Application, Response, Request } from "express";
 import { AccountController } from "../controllers/account.ctrl";
 import { AccountService } from "../../services/account.svc";
 import { AccountRepository } from "../../repositories/account.repo";
-import { S3Service } from "../../../infrastructure/services/s3.svc";
-import { storageClient } from "../../../infrastructure/aws/s3";
+import { S3Repository } from "../../repositories/s3.repo";
+import { storageClient } from "../../aws/s3";
 
 export const AccountRoutes = (app: Application) => {
     let accountRepo = new AccountRepository() 
-    let accountService = new AccountService(accountRepo)
-    let s3Service = new S3Service(storageClient)
+    let s3Repo = new S3Repository(storageClient)
 
-    let accountController = new AccountController(accountService, s3Service)
+    let accountService = new AccountService(accountRepo, s3Repo)
+
+    let accountController = new AccountController(accountService)
 
     app.post('/v1/api/auth/sendsms', accountController.sendPhoneCode)
     app.post('/v1/api/auth/pre-register', accountController.preRegisterAccount)
