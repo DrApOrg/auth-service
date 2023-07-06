@@ -16,6 +16,7 @@ const config = {
     TWILIO_SID: process.env.TWILIO_SID,
     TWILIO_PHONE: process.env.TWILIO_PHONE,
     TWILIO_TOKEN: process.env.TWILIO_TOKEN,
+    JWT_SECRETKEY: process.env.JWT_SECRETKEY,
 
     PORT: process.env.PORT
 }

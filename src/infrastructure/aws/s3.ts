@@ -13,6 +13,7 @@ export const storageClient = new AWS.S3({
 export const uploadFile = async (file: any) =>  {
     const stream = fs.createReadStream(file.tempFilePath)
     const uniqueFileName = generateUniqueFileName(file.name)
+    console.log(file)
 
     const uploadParams = {
         Bucket: process.env.AWS_BUCKET_NAME!,

@@ -2,6 +2,7 @@ import { ResponsePayload } from "../../../domain/Payload/response.payload"
 import { IAccount } from "../../../domain/models/account"
 import { IAccountService } from "../../../domain/services/IAccountService"
 import { JwtService } from "../../services/jwt.svc"
+import jwt from 'jsonwebtoken'
 import type { NextFunction, Request, Response } from "express"
 import { IFileRepository } from "../../../domain/repositories/IFile.srv"
 
@@ -17,6 +18,7 @@ export class AccountController{
             if(!req.files) {
                 throw Error("not found file")
             }            
+            console.log(req.files)
             const imageUrl = await this.accService.uploadFile(req.files.file)
             res.json({
                 imageurl: imageUrl,
@@ -105,6 +107,25 @@ export class AccountController{
             next(error)
         }
     } 
+
+    editAccount = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization as string;
+            const decoded = await JwtService.verifyToken(token.slice(7));
+
+            const {firstName, lastName, birthday, image} = req.body
+            console.log(decoded.userId, lastName, firstName, birthday)
+            const updatedAccount = await this.accService.patchAccount({id: decoded.userId, firstName, lastName, birthday, image} as IAccount)
+            const payload: ResponsePayload<IAccount> = {
+                message: "user updated successfully",
+                status: 200,
+                data: updatedAccount
+            }
+            return res.json(payload).status(200)
+        } catch (error) {
+            next(error)
+        }
+    }
 
     loginAccount = async (req: Request, res: Response, next: NextFunction) => {
         try {

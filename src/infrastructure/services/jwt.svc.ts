@@ -4,12 +4,11 @@ import jwt from 'jsonwebtoken'
 export class JwtService {
 
     static generateToken = (params: IAccount): string => {
-        return jwt.sign({data: "hola"}, 'secretkey') 
+        return jwt.sign({userId: params.id}, process.env.JWT_SECRETKEY as string) 
     }
 
-    static verifyToken = (token: string) => {
-        jwt.verify(token, 'secretkey', (error, authData) => {
-            return typeof authData === "string"
-        })
+    static verifyToken = async (token: string) => {
+        const data = await jwt.verify(token, process.env.JWT_SECRETKEY as string)
+        return data as {userId: string}
     } 
 }

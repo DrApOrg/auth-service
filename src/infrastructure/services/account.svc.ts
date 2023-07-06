@@ -79,6 +79,14 @@ export class AccountService implements IAccountService {
         return account
     }
 
+    patchAccount = async (param: IAccount): Promise<IAccount> => {
+        const account = await this.accRepo.update(param.id as string, param)
+        if(!account) {
+            throw new BaseError("error updating user") 
+        }
+        return account
+    } 
+
     profile = async  (phone: string): Promise<IAccount> => { 
         const account = await this.accRepo.findByPhone(phone)
         if(!account) {

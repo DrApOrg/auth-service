@@ -12,6 +12,7 @@ export const accountSchema = new Schema({
     firstName: {type: String, required: true },
     name: {type: String, required: true },
     dni: {type: Number, required: true}, 
+    birthday: {type: Date, require: true},
     phone: {type: Number, required: true}, 
     email: {type: String}, 
     password: {type: String}, 

@@ -13,6 +13,8 @@ export const AccountRoutes = (app: Application) => {
 
     let accountController = new AccountController(accountService)
 
+    app.post('/v1/api/auth/account', accountController.editAccount)
+
     app.post('/v1/api/auth/sendsms', accountController.sendPhoneCode)
     app.post('/v1/api/auth/pre-register', accountController.preRegisterAccount)
     app.post('/v1/api/auth/register', accountController.registerAccount)
