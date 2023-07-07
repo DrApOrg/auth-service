@@ -42,7 +42,7 @@ export class AccountService implements IAccountService {
             throw new InvalidPhone
         }
 
-        if(await this.accRepo.findByPhone(phone)) {
+        if(await this.accRepo.findByPhone(phone.slice(3))) {
             throw new PhoneRegistrationError
         }
 

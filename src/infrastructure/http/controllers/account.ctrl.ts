@@ -55,11 +55,10 @@ export class AccountController{
             const phoneCode = await this.accService.sendPhoneCode(phone)
 
             const payload: ResponsePayload<{code: string}> = {
-                message: "phone registered successfully",
+                message: "sms successfully",
                 status: 200,
                 data: {
                     code: phoneCode,
-
                 }
             }
             return res.json(payload).status(200)

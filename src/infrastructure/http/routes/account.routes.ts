@@ -21,6 +21,9 @@ export const AccountRoutes = (app: Application) => {
     app.post('/v1/api/auth/resendsms', accountController.reSendPhoneCode)
     app.post('/v1/api/auth/login', accountController.loginAccount)
     app.post('/v1/api/auth/upload', accountController.uploadImage)
+    app.post('/v1/api/auth/test', (req: Request, res: Response) => {
+        res.send('hola mundo desde usuarios')
+    })
     app.get('/v1/api/auth/test', (req: Request, res: Response) => {
         res.send('hola mundo desde usuarios')
     })
