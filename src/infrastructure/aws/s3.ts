@@ -1,8 +1,8 @@
 import fs from 'fs'
-import * as AWS from 'aws-sdk'
+import S3 from 'aws-sdk/clients/s3'
 import shortid from 'shortid';
 
-export const storageClient = new AWS.S3({
+export const storageClient = new S3({
     region: process.env.AWS_REGION,
     credentials: {
         accessKeyId: process.env.AWS_ACCESSKEYID as string,

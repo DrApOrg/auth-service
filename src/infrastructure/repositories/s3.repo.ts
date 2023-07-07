@@ -1,6 +1,6 @@
 import { IFileRepository } from "../../domain/repositories/IFile.srv";
 import { generateUniqueFileName } from "../aws/s3";
-import {S3 as s3Client} from 'aws-sdk'
+import {type S3 as s3Client} from 'aws-sdk'
 import fs from 'fs'
 
 export class S3Repository implements IFileRepository {
